@@ -810,6 +810,60 @@ describe Capybara::Driver::Webkit do
     end
   end
 
+  context "touch app" do
+    before(:all) do
+      @app =lambda do |env|
+        body = <<-HTML
+          <html><body>
+            <div id="touchend">Touch me</div>
+            <div id="touchstart">Release me</div>
+            <script>
+              document.getElementById("touchend").
+                addEventListener("touchend", function (e) {
+                  this.className = "triggered";
+                });
+              document.getElementById("touchstart").
+                addEventListener("touchstart", function () {
+                  this.className = "triggered";
+                });
+            </script>
+          </body></html>
+        HTML
+        [200,
+          { 'Content-Type' => 'text/html', 'Content-Length' => body.length.to_s },
+          [body]]
+      end
+    end
+
+    it "fires a touchstart event" do
+      subject.find("//*[@id='touchend']").first.trigger("touchend")
+      subject.find("//*[@class='triggered']").should_not be_empty
+    end
+    #
+    # it "fires a non-mouse event" do
+    #   subject.find("//*[@id='change']").first.trigger("change")
+    #   subject.find("//*[@class='triggered']").should_not be_empty
+    # end
+    #
+    # it "fires a change on select" do
+    #   select = subject.find("//select").first
+    #   select.value.should == "1"
+    #   option = subject.find("//option[@id='option-2']").first
+    #   option.select_option
+    #   select.value.should == "2"
+    #   subject.find("//select[@class='triggered']").should_not be_empty
+    # end
+    #
+    # it "fires drag events" do
+    #   draggable = subject.find("//*[@id='mousedown']").first
+    #   container = subject.find("//*[@id='mouseup']").first
+    #
+    #   draggable.drag_to(container)
+    #
+    #   subject.find("//*[@class='triggered']").size.should == 1
+    # end
+  end
+
   context "nesting app" do
     before(:all) do
       @app = lambda do |env|

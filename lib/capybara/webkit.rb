@@ -1,6 +1,12 @@
 require "capybara"
 require "capybara/driver/webkit"
 
+class Capybara::Node::Element
+  def touch
+    wait_until { base.touch }
+  end
+end
+
 Capybara.register_driver :webkit do |app|
   Capybara::Driver::Webkit.new(app)
 end

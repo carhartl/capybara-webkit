@@ -45,6 +45,10 @@ class Capybara::Driver::Webkit
       invoke "click"
     end
 
+    def touch
+      invoke "touch"
+    end
+
     def drag_to(element)
       invoke 'dragTo', element.native
     end

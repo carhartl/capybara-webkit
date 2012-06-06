@@ -116,6 +116,43 @@ Capybara = {
     this.nodes[index].dispatchEvent(clickEvent);
   },
 
+  touchTrigger: function (index, eventName) {
+    var element = this.nodes[index];
+    var x = 0;
+    var y = 0;
+
+    // Using the "proper" touch related API wasn't yielding expected results,
+    // events had never been dispatched to listeners.
+    // var touch = document.createTouch(window, element, 0, x, y, x, y);
+    // var touches = document.createTouchList(touch);
+    // var targetTouches = document.createTouchList(touch);
+    // var changedTouches = document.createTouchList(touch);
+    // var touchEvent = document.createEvent('TouchEvent');
+    // touchEvent.initTouchEvent('touch' + eventName, true, true, window, null, 0, 0, 0, 0, false, false, false, false, touches, targetTouches, changedTouches, 1, 0);
+    // element.dispatchEvent(touchEvent);
+
+    var event = document.createEvent('Events');
+    var touch = { pageX: x, pageY: y, target: element };
+    event.touches = [touch];
+    event.targetTouches = [touch];
+    event.changedTouches = [];
+    event.initEvent('touch' + eventName, true, true);
+    element.dispatchEvent(event);
+  },
+
+  touchstart: function (index) {
+    this.touchTrigger(index, 'start');
+  },
+
+  touchend: function (index) {
+    this.touchTrigger(index, 'end');
+  },
+
+  touch: function (index) {
+    this.touchstart(index);
+    this.touchend(index);
+  },
+
   trigger: function (index, eventName) {
     var eventObject = document.createEvent("HTMLEvents");
     eventObject.initEvent(eventName, true, true);
