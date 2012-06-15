@@ -148,7 +148,25 @@ Capybara = {
     this.touchTrigger(index, 'end');
   },
 
+  touchcancel: function(index) {
+    var element = this.nodes[index];
+    var x = 0;
+    var y = 0;
+    var event = document.createEvent('Events');
+    var touch = { pageX: x, pageY: y, target: element };
+    event.touches = [];
+    event.targetTouches = [];
+    event.changedTouches = [touch];
+    event.initEvent('touchcancel', true, false);
+    element.dispatchEvent(event);
+  },
+
   touch: function (index) {
+    // First reset all touches, this prevents libraries like Zepto from
+    // mistaking certain taps for double taps (touchstart - touchstart),
+    // when for instance touch interactions occur quickly after each other.
+    this.touchcancel(index);
+
     this.touchstart(index);
     this.touchend(index);
   },
